@@ -2,17 +2,22 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 """
+Model for roles
+"""
+class Role(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+"""
 Model for creators
 """
 class Creator(models.Model):
     name = models.CharField(max_length=100)
     birth_date = models.DateField()
     death_date = models.DateField(null=True, blank=True)
-    role = models.CharField(max_length=50, choices=[
-        ('Writer', 'Writer'),
-        ('Illustrator', 'Illustrator'), 
-        ('Director', 'Director'), 
-        ('Developer', 'Developer')])
+    roles = models.ManyToManyField(Role, related_name="creators")  # Now a creator can have multiple roles
     history = HistoricalRecords()
 
     def __str__(self):
@@ -34,7 +39,9 @@ class Media(models.Model):
     illustrators = models.ManyToManyField(Creator, related_name="illustrated_media", blank=True)
     directors = models.ManyToManyField(Creator, related_name="directed_media", blank=True)
     developers = models.ManyToManyField(Creator, related_name="developed_media", blank=True)
-    characters = models.ManyToManyField('Character', blank=True)
+    characters = models.ManyToManyField('Character', blank=True, related_name="appears_in")
+    locations = models.ManyToManyField('Location', blank=True, related_name="featured_locations")
+    factions = models.ManyToManyField('Faction', blank=True, related_name="featured_factions")
     first_published = models.DateField()
     history = HistoricalRecords()
 
@@ -61,9 +68,9 @@ Model for Characters
 """
 class Character(models.Model):
     name = models.CharField(max_length=100)
-    media = models.ManyToManyField(Media)
+    media = models.ManyToManyField(Media, related_name="featured_characters")
     first_appearance = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, related_name="first_appeared_in")
-    last_appearance = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, related_name="first_appeared_in")
+    last_appearance = models.ForeignKey(Media, on_delete=models.SET_NULL, null=True, related_name="last_appeared_in")
     hair_color = models.CharField(max_length=100)
     gender = models.CharField(max_length=1, choices=[('m', 'Male'), ('f', 'Female'), ('o', 'Other')])
     location = models.ForeignKey('Location', on_delete=models.SET_NULL, null=True)

@@ -1,2 +1,5 @@
 .venv
 .vscode
+apiterix/__pycache__
+asterix/__pycache__
+asterix/migrations/__pycache__
