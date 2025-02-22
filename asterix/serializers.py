@@ -7,18 +7,12 @@ class RoleSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 class CreatorSerializer(serializers.HyperlinkedModelSerializer):
-    roles = RoleSerializer(many=True)  # Nested serializer
 
     class Meta:
         model = Creator
         fields = '__all__'
 
 class MediaSerializer(serializers.HyperlinkedModelSerializer):
-    writers = CreatorSerializer(many=True, read_only=True)
-    illustrators = CreatorSerializer(many=True, read_only=True)
-    directors = CreatorSerializer(many=True, read_only=True)
-    developers = CreatorSerializer(many=True, read_only=True)
-
     class Meta:
         model = Media
         fields = '__all__'
